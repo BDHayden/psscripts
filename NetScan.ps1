@@ -15,9 +15,11 @@ $subnets = (Get-NetIPAddress -AddressFamily IPv4).IPAddress
 # Trim last octet off subnet
 $trimmedsubnets = @()
 ForEach($subnet in $subnets){
+  If($subnet -ne "127.0.0.1"){
     $octetrm = $subnet.LastIndexOf('.')
     $subnet = $subnet.Remove($octetrm)
     $trimmedsubnets += $subnet
+  }
 }
 
 # ICMP test ip addresses in subnets
