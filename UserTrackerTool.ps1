@@ -15,12 +15,13 @@ Which Function would you like to perform?
 1. Find Computer user is logged onto
 2. Find which Users are logged into a Computer
 3. Log User out of a Computer
+4. Get Computer Uptime
+
 "
-switch ($prompt1)
-{
+switch ($prompt1){
     1 { #Find Computer user is logged onto (gets ad computers and checks them for the specified user as logged on)
         $Computers = @()
-        $Getad = Get-ADObject -LDAPFilter objectclass=computer -Properties name -SearchBase "OU=Computers,DC=domain,DC=com" 
+        $Getad = Get-ADObject -LDAPFilter objectclass=computer -Properties name -SearchBase "OU=Workstations_w10,DC=cbdomain,DC=com" 
         $Computers += $Getad.name
         $adpccount = $Computers.Count
         $user = Read-Host -Prompt "Which user?"
@@ -47,19 +48,29 @@ switch ($prompt1)
         $user is logged in on the following machine(s):"
         $loggedonpcs
         read-host “Press ENTER to continue...”
-      }
+      }#/Find Computer user is logged onto (gets ad computers and checks them for the specified user as logged on)
     2 { #Find which Users are logged into a Computer
         $Computer = Read-Host -Prompt "Which Computer?"
         query user /server:$Computer
         read-host “Press ENTER to continue...”
-      }
+      }#/Find which Users are logged into a Computer
     3 { #Log User out of a Computer
         $Computer = Read-Host -Prompt "Which Computer?"
         query user /server:$Computer
         $userID = Read-Host -Prompt "Please input the proper user ID" 
         logoff /server:$computer $userID
         read-host “Press ENTER to continue...”
-      }
-}
+      }#/Log User out of a Computer
+    4 { #Get Computer uptime
+        $Computer = Read-Host -Prompt "Which Computer?"
+        $bootuptime = (Get-CimInstance -ClassName Win32_OperatingSystem -ComputerName $Computer).LastBootUpTime
+        $CurrentDate = Get-Date
+        $uptime = $CurrentDate - $bootuptime
+        clear
+        Write-Output "$computer Uptime --> Days: $($uptime.days), Hours: $($uptime.Hours), Minutes:$($uptime.Minutes)"
+        read-host “Press ENTER to continue...”
+      }#/Get Computer uptime
+    }
+
 }
 while ($prompt1 -ne '0'){exit}
